@@ -1,0 +1,42 @@
+[
+  {
+    "id": "TKT-001",
+    "channel": "email",
+    "customer_name": "Alice Johnson",
+    "subject": "Help with CSV Import",
+    "message": "Hello Support,\n\nI'm trying to import my client list via CSV but keep getting a 'format error' on line 42. I've double-checked the headers. Can you take a look at my file if I send it?\n\nBest,\nAlice",
+    "sentiment": "neutral"
+  },
+  {
+    "id": "TKT-002",
+    "channel": "whatsapp",
+    "customer_name": "Bob Smith",
+    "subject": null,
+    "message": "hey quick question, how do i change the currency on an invoice?",
+    "sentiment": "neutral"
+  },
+  {
+    "id": "TKT-003",
+    "channel": "web_form",
+    "customer_name": "Charlie Davis",
+    "subject": "Billing Error",
+    "message": "I was charged twice for the Professional Plan this month. I demand an immediate refund! This is unacceptable service. I've been a loyal customer for a year and I expect this to be fixed NOW.",
+    "sentiment": "angry"
+  },
+  {
+    "id": "TKT-004",
+    "channel": "whatsapp",
+    "customer_name": "Diana Prince",
+    "subject": null,
+    "message": "thx for the help earlier! works now",
+    "sentiment": "positive"
+  },
+  {
+    "id": "TKT-005",
+    "channel": "email",
+    "customer_name": "Edward Norton",
+    "subject": "API Access for Enterprise",
+    "message": "Dear TechCorp Team,\n\nWe are looking to integrate our internal CRM with your invoicing system. Could you provide the API documentation and confirm if our Enterprise plan covers the necessary rate limits for approximately 5,000 requests per day?\n\nRegards,\nEdward Norton\nOps Lead, Norton & Co.",
+    "sentiment": "professional"
+  }
+]

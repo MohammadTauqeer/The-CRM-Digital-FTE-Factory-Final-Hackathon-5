@@ -1,0 +1,67 @@
+{
+  "skills": [
+    {
+      "name": "Knowledge Retrieval Skill",
+      "description": "Accesses and retrieves relevant information from the TechCorp knowledge base (product docs, company profile).",
+      "when_to_use": "When a customer asks a technical or policy-related question that requires factual information from TechCorp documentation.",
+      "inputs": {
+        "query": "The search term or question to look up in the knowledge base."
+      },
+      "outputs": {
+        "content": "Relevant excerpts from the documentation.",
+        "source": "The specific document the information was retrieved from."
+      }
+    },
+    {
+      "name": "Sentiment Analysis Skill",
+      "description": "Analyzes customer messages to determine their emotional state, specifically identifying frustration or anger.",
+      "when_to_use": "On every incoming message to gauge customer satisfaction and determine if immediate priority handling is needed.",
+      "inputs": {
+        "message": "The text of the customer's message."
+      },
+      "outputs": {
+        "sentiment": "One of: positive, neutral, frustrated, angry.",
+        "confidence_score": "Numerical value representing analysis confidence."
+      }
+    },
+    {
+      "name": "Escalation Decision Skill",
+      "description": "Determines if a customer ticket should be transferred to a human supervisor based on sentiment, complexity, or user request.",
+      "when_to_use": "When sentiment is 'angry', the query is too complex for the LLM, or the user explicitly asks for a human.",
+      "inputs": {
+        "message_context": "Current message and analysis results.",
+        "history": "Previous interaction summaries."
+      },
+      "outputs": {
+        "escalate": "Boolean indicating if escalation is required.",
+        "reason": "Justification for the decision."
+      }
+    },
+    {
+      "name": "Channel Adaptation Skill",
+      "description": "Formats the agent's response according to the specific communication channel being used (e.g., Email vs. WhatsApp).",
+      "when_to_use": "Just before sending the final response to ensure it meets channel-specific tone and character limits.",
+      "inputs": {
+        "raw_response": "The generated answer in plain text.",
+        "channel": "The target channel (email, whatsapp, web-form)."
+      },
+      "outputs": {
+        "formatted_response": "The response tailored for the specific channel.",
+        "metadata": "Channel-specific metadata (e.g., subject line for email)."
+      }
+    },
+    {
+      "name": "Customer Identification Skill",
+      "description": "Identifies the customer and merges current interaction with historical data to maintain a unified profile.",
+      "when_to_use": "At the start of a session or when contact details are provided by the customer.",
+      "inputs": {
+        "contact_info": "Email, phone number, or customer ID.",
+        "session_id": "Current session identifier."
+      },
+      "outputs": {
+        "customer_profile": "Unified customer data including history and preferences.",
+        "is_new_customer": "Boolean flag."
+      }
+    }
+  ]
+}
