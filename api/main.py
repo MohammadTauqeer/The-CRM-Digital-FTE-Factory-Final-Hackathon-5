@@ -11,7 +11,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 from datetime import datetime
-from api.tasks import process_ticket_task
 from api.celery_app import celery_app
 
 app = FastAPI(title="Custom CRM API")
@@ -185,6 +184,7 @@ async def search_customers(email: str):
 @app.post("/support/submit")
 async def submit_support_request(request: SupportRequest):
     # Push the ticket processing to the background
+    from api.tasks import process_ticket_task
     task = process_ticket_task.delay(request.message)
     return {
         "status": "queued",
