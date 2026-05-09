@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
+
 export default function Home() {
   const [formData, setFormData] = useState({
     name: "",
@@ -28,7 +30,7 @@ export default function Home() {
     setError(null);
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/support/submit", {
+      const res = await fetch(`${BACKEND_URL}/support/submit`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -45,7 +47,7 @@ export default function Home() {
       // Polling loop
       let status = "processing";
       while (status === "processing") {
-        const statusRes = await fetch(`http://127.0.0.1:8000/support/status/${data.task_id}`);
+        const statusRes = await fetch(`${BACKEND_URL}/support/status/${data.task_id}`);
         if (!statusRes.ok) throw new Error("Failed to check task status");
         
         const statusData = await statusRes.json();

@@ -1,3 +1,8 @@
+from dotenv import load_dotenv
+
+# Load environment variables at the very top
+load_dotenv()
+
 import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -8,10 +13,6 @@ from typing import List, Optional
 from datetime import datetime
 from api.tasks import process_ticket_task
 from api.celery_app import celery_app
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
 
 app = FastAPI(title="Custom CRM API")
 
@@ -20,7 +21,7 @@ GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "*"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
