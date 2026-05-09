@@ -22,8 +22,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project
 COPY . .
 
+# Make start.sh executable
+RUN chmod +x start.sh
+
 # Expose port (default for FastAPI)
 EXPOSE 8000
 
-# Default command (will be overridden in docker-compose for worker)
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Default command
+CMD ["./start.sh"]
