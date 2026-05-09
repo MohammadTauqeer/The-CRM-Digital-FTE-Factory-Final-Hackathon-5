@@ -62,7 +62,7 @@ export default function Home() {
           await new Promise((resolve) => setTimeout(resolve, 2000));
         }
       }
-    } catch (err: any) {
+    } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
       setError(err.message || "An unexpected error occurred");
     } finally {
       setLoading(false);
