@@ -4,14 +4,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
-import psycopg2
-from psycopg2.extras import RealDictCursor
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 from datetime import datetime
-from api.celery_app import celery_app
 
 app = FastAPI(title="Custom CRM API")
 
@@ -23,7 +20,6 @@ app.add_middleware(
     allow_origins=[
         "https://crm-fte-frontend.onrender.com",
         "http://localhost:3000",
-        "*",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -32,8 +28,9 @@ app.add_middleware(
 
 # Database connection helper
 def get_db_connection():
+    import psycopg2
     db_url = os.getenv("DATABASE_URL", "dbname='crm_db' user='postgres' password='postgres' host='127.0.0.1' port='5432'")
-    if os.getenv("RENDER"): # Only print on Render to avoid leaking local credentials if possible, though Render's are also sensitive. Actually user asked to ensure they are using os.getenv, adding print for debug as requested for celery might be good here too.
+    if os.getenv("RENDER"):
         print(f"Connecting to DB: {db_url.split('@')[-1] if '@' in db_url else 'local'}")
     return psycopg2.connect(db_url)
 
@@ -84,6 +81,7 @@ async def root():
 async def create_customer(customer: CustomerCreate):
     conn = get_db_connection()
     try:
+        from psycopg2.extras import RealDictCursor
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute(
                 "INSERT INTO customers (email, name) VALUES (%s, %s) RETURNING id, email, name, created_at",
@@ -102,6 +100,7 @@ async def create_customer(customer: CustomerCreate):
 async def read_customers():
     conn = get_db_connection()
     try:
+        from psycopg2.extras import RealDictCursor
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute("SELECT id, email, name, created_at FROM customers")
             return cur.fetchall()
@@ -112,6 +111,7 @@ async def read_customers():
 async def create_ticket(ticket: TicketCreate):
     conn = get_db_connection()
     try:
+        from psycopg2.extras import RealDictCursor
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             # Check if customer exists
             cur.execute("SELECT id FROM customers WHERE id = %s", (ticket.customer_id,))
@@ -137,6 +137,7 @@ async def create_ticket(ticket: TicketCreate):
 async def read_tickets(customer_id: Optional[int] = None, status: Optional[str] = None):
     conn = get_db_connection()
     try:
+        from psycopg2.extras import RealDictCursor
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             query = "SELECT id, customer_id, channel, subject, message, status, created_at FROM tickets WHERE 1=1"
             params = []
@@ -156,6 +157,7 @@ async def read_tickets(customer_id: Optional[int] = None, status: Optional[str] 
 async def update_ticket_status(ticket_id: int, status: str):
     conn = get_db_connection()
     try:
+        from psycopg2.extras import RealDictCursor
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute(
                 "UPDATE tickets SET status = %s WHERE id = %s RETURNING id, customer_id, channel, subject, message, status, created_at",
@@ -178,6 +180,7 @@ async def update_ticket_status(ticket_id: int, status: str):
 async def search_customers(email: str):
     conn = get_db_connection()
     try:
+        from psycopg2.extras import RealDictCursor
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             cur.execute(
                 "SELECT id, email, name, created_at FROM customers WHERE email ILIKE %s",
@@ -201,6 +204,7 @@ async def submit_support_request(request: SupportRequest):
 
 @app.get("/support/status/{task_id}")
 async def get_task_status(task_id: str):
+    from api.celery_app import celery_app
     task = celery_app.AsyncResult(task_id)
     if task.state in ['PENDING', 'STARTED']:
         return {"status": "processing"}
