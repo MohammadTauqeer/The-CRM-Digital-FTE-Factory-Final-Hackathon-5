@@ -13,3 +13,6 @@ celery_app = Celery(
     backend=redis_url,
     include=['api.tasks']
 )
+
+celery_app.conf.worker_max_tasks_per_child = 1
+celery_app.conf.worker_prefetch_multiplier = 1
