@@ -20,7 +20,11 @@ GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://crm-fte-frontend.onrender.com",
+        "http://localhost:3000",
+        "*",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
