@@ -29,6 +29,8 @@ app.add_middleware(
 # Database connection helper
 def get_db_connection():
     db_url = os.getenv("DATABASE_URL", "dbname='crm_db' user='postgres' password='postgres' host='127.0.0.1' port='5432'")
+    if os.getenv("RENDER"): # Only print on Render to avoid leaking local credentials if possible, though Render's are also sensitive. Actually user asked to ensure they are using os.getenv, adding print for debug as requested for celery might be good here too.
+        print(f"Connecting to DB: {db_url.split('@')[-1] if '@' in db_url else 'local'}")
     return psycopg2.connect(db_url)
 
 # Pydantic models

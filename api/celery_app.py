@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+print(f"Connecting Celery to: {redis_url}")
 
 celery_app = Celery(
     'crm_tasks',
