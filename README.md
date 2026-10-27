@@ -1,7 +1,7 @@
 # CRM AI Agent - TechCorp FTE Factory
 
 ## Project Overview
-This project is an AI-powered customer support agent for TechCorp. It uses the Gemini 1.5 Flash model to handle customer inquiries via multiple channels (Email, Web Form, WhatsApp). The system is built with a decoupled architecture, using a FastAPI backend to manage a PostgreSQL database and a Celery worker with Redis for asynchronous task processing.
+This project is an AI-powered customer support agent for TechCorp. It uses the Gemini 3.8 Flash model to handle customer inquiries via multiple channels (Email, Web Form, WhatsApp). The system is built with a decoupled architecture, using a FastAPI backend to manage a PostgreSQL database and a Celery worker with Redis for asynchronous task processing.
 
 The agent is capable of:
 - Searching a knowledge base for information.
