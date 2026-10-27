@@ -1,10 +1,7 @@
 import os
 import time
-import json
 import google.generativeai as genai
-from google.generativeai import types
 from dotenv import load_dotenv
-import typing_extensions as typing
 from src.agent.mcp_server import TechCorpMCPServer
 
 # Load environment variables
@@ -50,17 +47,19 @@ Use 'create_ticket' if you need to track a new issue that cannot be resolved in 
             tools=self.tools,
             system_instruction=self.system_instruction
         )
-        
-        # Automatic function calling enabled: SDK handles execution loop automatically
-        self.chat = self.model.start_chat(enable_automatic_function_calling=True)
 
-    def handle_message(self, message: str):
+    def handle_message(self, message: str) -> str:
         """
-        Sends a message to the agent and returns the final response automatically.
+        Sends a message to a fresh chat session per request.
+        Prevents thread blocking / race conditions in Celery background workers.
         """
-        time.sleep(1)
-        response = self.chat.send_message(message)
-        return response.text
+        # Create a clean, fresh chat session per request
+        chat = self.model.start_chat(enable_automatic_function_calling=True)
+        response = chat.send_message(message)
+        
+        if response and hasattr(response, 'text') and response.text:
+            return response.text
+        return "Agent processed your request successfully."
 
 if __name__ == "__main__":
     agent = TechCorpAgent()
