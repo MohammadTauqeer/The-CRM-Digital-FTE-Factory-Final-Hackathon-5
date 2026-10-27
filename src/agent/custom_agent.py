@@ -51,60 +51,21 @@ Use 'create_ticket' if you need to track a new issue that cannot be resolved in 
             system_instruction=self.system_instruction
         )
         
-        # Initialize chat session. Manual tool calling to allow for rate-limit throttling.
-        self.chat = self.model.start_chat(enable_automatic_function_calling=False)
+        # Automatic function calling enabled: SDK handles execution loop automatically
+        self.chat = self.model.start_chat(enable_automatic_function_calling=True)
 
     def handle_message(self, message: str):
         """
-        Sends a message to the agent and returns the final response.
-        Tool calls are handled manually with throttling to prevent 429 errors.
+        Sends a message to the agent and returns the final response automatically.
         """
-        # Throttling before the initial model call
-        time.sleep(2)
+        time.sleep(1)
         response = self.chat.send_message(message)
-        
-        while True:
-            # Check for function calls in the response
-            if not (response.candidates and 
-                    response.candidates[0].content.parts and 
-                    response.candidates[0].content.parts[0].function_call):
-                break
-                
-            tool_call = response.candidates[0].content.parts[0].function_call
-            
-            # Map tool names to functions
-            tool_map = {
-                "search_knowledge_base": self.server.search_knowledge_base,
-                "create_ticket": self.server.create_ticket,
-                "get_customer_history": self.server.get_customer_history,
-                "escalate_to_human": self.server.escalate_to_human,
-                "send_response": self.server.send_response
-            }
-            
-            handler = tool_map.get(tool_call.name)
-            if handler:
-                result = handler(**tool_call.args)
-                
-                # Throttling before sending the tool response back to the model
-                time.sleep(2)
-                response = self.chat.send_message(
-                    types.Part.from_function_response(
-                        name=tool_call.name,
-                        response={'result': result}
-                    )
-                )
-            else:
-                break
-                
         return response.text
 
 if __name__ == "__main__":
     agent = TechCorpAgent()
     
     print("--- Custom Agent Tool-Enabled Simulation ---")
-    
-    # Simulation: A user asking about their previous tickets
-    # This should trigger get_customer_history
     user_query = "Hi, I'm CUST-001. Can you tell me what happened with my previous tickets and how I can reset my password?"
     
     print(f"\n[User]: {user_query}")
@@ -112,17 +73,6 @@ if __name__ == "__main__":
     
     try:
         response = agent.handle_message(user_query)
-        
         print(f"\n[Final Agent Response]:\n{response}")
-        
-        # Inspect chat history to see tool calls (optional but good for verification)
-        print("\n--- Tool Call History (Internal) ---")
-        for content in agent.chat.history:
-            for part in content.parts:
-                if fn := part.function_call:
-                    print(f"Tool Call: {fn.name}({fn.args})")
-                if fr := part.function_response:
-                    print(f"Tool Response: {fr.name} -> {fr.response}")
     except Exception as e:
         print(f"\n[Execution Error]: {e}")
-        print("\nNote: If you see a 429 ResourceExhausted error, it means the API quota has been reached. The code structure is correct and ready for use once quota is available.")
