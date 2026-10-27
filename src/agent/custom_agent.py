@@ -2,6 +2,7 @@ import os
 import time
 import json
 import google.generativeai as genai
+from google.generativeai import types
 from dotenv import load_dotenv
 import typing_extensions as typing
 from src.agent.mcp_server import TechCorpMCPServer
@@ -87,7 +88,7 @@ Use 'create_ticket' if you need to track a new issue that cannot be resolved in 
                 # Throttling before sending the tool response back to the model
                 time.sleep(2)
                 response = self.chat.send_message(
-                    genai.types.Part.from_function_response(
+                    types.Part.from_function_response(
                         name=tool_call.name,
                         response={'result': result}
                     )
