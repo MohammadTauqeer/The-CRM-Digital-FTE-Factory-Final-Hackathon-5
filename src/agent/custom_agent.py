@@ -15,7 +15,7 @@ class TechCorpAgent:
     Integrates with TechCorpMCPServer to perform complex tasks via function calling.
     """
     
-    def __init__(self, model_name="gemini-3.8-flash"):
+    def __init__(self, model_name="gemini-1.5-flash"):
         self.server = TechCorpMCPServer()
         
         # Define the tools available to the agent
@@ -23,11 +23,10 @@ class TechCorpAgent:
             self.server.search_knowledge_base,
             self.server.create_ticket,
             self.server.get_customer_history,
-            self.server.escalate_to_human,
-            self.server.send_response
+            self.server.escalate_to_human
         ]
         
-        # System instruction to enforce the workflow
+        # System instruction without invisible unicode characters
         self.system_instruction = """
 You are a senior customer support agent for TechCorp.
 You have access to a set of tools to help you resolve customer inquiries.
@@ -35,7 +34,7 @@ You have access to a set of tools to help you resolve customer inquiries.
 WORKFLOW:
 1. When a customer contacts you, FIRST check their history using 'get_customer_history' if a customer ID is provided.
 2. THEN, search the knowledge base using 'search_knowledge_base' to find the most accurate information for their issue.
-3. AFTER gathering all necessary information, use 'send_response' to provide the final answer to the customer.
+3. AFTER gathering all necessary information, answer the customer's question directly with clear steps.
 4. If the issue is complex (billing, refunds, or high frustration), use 'escalate_to_human'.
 
 IMPORTANT: Always follow this sequence. Do not skip steps.
@@ -53,13 +52,18 @@ Use 'create_ticket' if you need to track a new issue that cannot be resolved in 
         Sends a message to a fresh chat session per request.
         Prevents thread blocking / race conditions in Celery background workers.
         """
-        # Create a clean, fresh chat session per request
-        chat = self.model.start_chat(enable_automatic_function_calling=True)
-        response = chat.send_message(message)
-        
-        if response and hasattr(response, 'text') and response.text:
-            return response.text
-        return "Agent processed your request successfully."
+        try:
+            # Create a clean, fresh chat session per request
+            chat = self.model.start_chat(enable_automatic_function_calling=True)
+            response = chat.send_message(message)
+            
+            # Extract output safely
+            if response and hasattr(response, 'text') and response.text:
+                return response.text
+                
+            return "Task completed successfully."
+        except Exception as e:
+            return f"Agent execution note: {str(e)}"
 
 if __name__ == "__main__":
     agent = TechCorpAgent()
