@@ -17,7 +17,7 @@ class TechCorpAgent:
     Integrates with TechCorpMCPServer to perform complex tasks via function calling.
     """
     
-    def __init__(self, model_name="gemini-2.0-flash"):
+    def __init__(self, model_name="gemini-3.8-flash"):
         self.server = TechCorpMCPServer()
         
         # Define the tools available to the agent
